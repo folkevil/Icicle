@@ -19,9 +19,4 @@ class LibeventLoopTest extends AbstractLoopTest
     {
         $this->assertSame(extension_loaded('libevent'), LibeventLoop::enabled());
     }
-    
-    public function tearDown()
-    {
-        unset($this->loop); // Force freeing of event base.
-    }
 }
