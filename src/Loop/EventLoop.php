@@ -75,10 +75,11 @@ class EventLoop extends AbstractLoop
     
     /**
      * @param   EventFactoryInterface|null $eventFactory
+     * @param   EventBase|null $base Use null for an EventBase object to be automatically created.
      *
      * @throws  UnsupportedException If the event extension is not loaded.
      */
-    public function __construct(EventFactoryInterface $eventFactory = null)
+    public function __construct(EventFactoryInterface $eventFactory = null, EventBase $base = null)
     {
         // @codeCoverageIgnoreStart
         if (!self::enabled()) {
@@ -87,10 +88,15 @@ class EventLoop extends AbstractLoop
         
         parent::__construct($eventFactory);
         
-        $config = new EventConfig();
-        $config->requireFeatures(EventConfig::FEATURE_O1);
+        $this->base = $base;
         
-        $this->base = new EventBase($config);
+        if (null === $this->base) {
+            $config = new EventConfig();
+            $config->requireFeatures(EventConfig::FEATURE_O1);
+            
+            $this->base = new EventBase($config);
+        }
+        
         $this->timers = new UnreferencableObjectStorage();
         
         if ($this->signalHandlingEnabled()) {
@@ -138,8 +144,6 @@ class EventLoop extends AbstractLoop
         foreach ($this->signalEvents as $event) {
             $event->free();
         }
-        
-        $this->base->free();
     }
     
     /**
