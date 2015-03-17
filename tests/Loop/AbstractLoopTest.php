@@ -1101,14 +1101,11 @@ abstract class AbstractLoopTest extends TestCase
      */
     public function testChildSignal()
     {
-        $timer = $this->loop->createTimer(function () {}, 5, false);
-        
-        $callback = $this->createCallback(1);
-        $callback->method('__invoke')
-                 ->with($this->identicalTo(SIGCHLD))
-                 ->will($this->returnCallback(function () use ($timer) {
-                     $timer->cancel();
-                 }));
+        $callback = function ($signo, $pid, $status) {
+            $this->assertSame(SIGCHLD, $signo);
+            $this->assertInternalType('integer', $pid);
+            $this->assertInternalType('integer', $status);
+        };
         
         $this->loop->addListener(SIGCHLD, $callback);
         
@@ -1119,6 +1116,12 @@ abstract class AbstractLoopTest extends TestCase
         ];
         
         proc_open('sleep 1', $fd, $pipes);
+        
+        $callback = function () {
+            $this->loop->createTimer(function () {}, 2); // Keep loop alive until signal arrives.
+        };
+        
+        $this->loop->schedule($callback);
         
         $this->loop->run();
     }
