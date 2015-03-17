@@ -19,13 +19,6 @@ class LibeventLoopTest extends AbstractLoopTest
         }
     }
     
-    public static function tearDownAfterClass()
-    {
-        if (null !== self::$base) {
-            event_base_free(self::$base);
-        }
-    }
-    
     public function createLoop(EventFactoryInterface $eventFactory)
     {
         return new LibeventLoop($eventFactory, self::$base);

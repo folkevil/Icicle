@@ -1072,6 +1072,7 @@ abstract class AbstractLoopTest extends TestCase
     /**
      * @medium
      * @depends testAddSignalHandler
+     * @runInSeparateProcess
      */
     public function testTerminateSignal()
     {
@@ -1095,14 +1096,19 @@ abstract class AbstractLoopTest extends TestCase
     
     /**
      * @medium
-     * @requires PHP 5.5
      * @depends testAddSignalHandler
+     * @runInSeparateProcess
      */
     public function testChildSignal()
     {
+        $timer = $this->loop->createTimer(function () {}, 5, false);
+        
         $callback = $this->createCallback(1);
         $callback->method('__invoke')
-                 ->with($this->identicalTo(SIGCHLD));
+                 ->with($this->identicalTo(SIGCHLD))
+                 ->will($this->returnCallback(function () use ($timer) {
+                     $timer->cancel();
+                 }));
         
         $this->loop->addListener(SIGCHLD, $callback);
         
@@ -1112,11 +1118,9 @@ abstract class AbstractLoopTest extends TestCase
             ['pipe', 'w'], // stderr
         ];
         
-        proc_open('whoami', $fd, $pipes);
+        proc_open('sleep 1', $fd, $pipes);
         
-        usleep(1 * self::MICROSEC_PER_SEC);
-        
-        $this->loop->tick(false);
+        $this->loop->run();
     }
     
     /**
