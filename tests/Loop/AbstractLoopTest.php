@@ -30,7 +30,9 @@ abstract class AbstractLoopTest extends TestCase
     
     public function tearDown()
     {
-        $this->loop->clear();
+        if (null !== $this->loop) {
+            $this->loop->clear();
+        }
     }
     
     /**
