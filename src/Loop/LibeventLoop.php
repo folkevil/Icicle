@@ -140,10 +140,6 @@ class LibeventLoop extends AbstractLoop
      */
     public function __destruct()
     {
-        if ($this->isRunning()) {
-            $this->stop();
-        }
-        
         foreach ($this->readEvents as $event) {
             event_free($event);
         }

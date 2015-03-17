@@ -23,16 +23,7 @@ abstract class AbstractLoopTest extends TestCase
     
     public function setUp()
     {
-        if (null === $this->loop) {
-            $this->loop = $this->createLoop($this->createEventFactory());
-        }
-    }
-    
-    public function tearDown()
-    {
-        if (null !== $this->loop) {
-            $this->loop->clear();
-        }
+        $this->loop = $this->createLoop($this->createEventFactory());
     }
     
     /**

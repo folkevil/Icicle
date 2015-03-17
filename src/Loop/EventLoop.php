@@ -119,10 +119,6 @@ class EventLoop extends AbstractLoop
      */
     public function __destruct()
     {
-        if ($this->isRunning()) {
-            $this->stop();
-        }
-        
         foreach ($this->readEvents as $event) {
             $event->free();
         }
@@ -138,6 +134,8 @@ class EventLoop extends AbstractLoop
         foreach ($this->signalEvents as $event) {
             $event->free();
         }
+        
+        $this->base->free();
     }
     
     /**
