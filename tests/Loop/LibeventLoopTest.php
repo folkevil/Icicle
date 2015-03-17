@@ -14,12 +14,16 @@ class LibeventLoopTest extends AbstractLoopTest
     
     public static function setUpBeforeClass()
     {
-        self::$base = event_base_new();
+        if (extension_loaded('libevent')) {
+            self::$base = event_base_new();
+        }
     }
     
     public static function tearDownAfterClass()
     {
-        event_base_free(self::$base);
+        if (null !== self::$base) {
+            event_base_free(self::$base);
+        }
     }
     
     public function createLoop(EventFactoryInterface $eventFactory)

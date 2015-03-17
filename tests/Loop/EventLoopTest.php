@@ -2,7 +2,6 @@
 namespace Icicle\Tests\Loop;
 
 use EventBase;
-use EventConfig;
 use Icicle\Loop\EventLoop;
 use Icicle\Loop\Events\EventFactoryInterface;
 use Icicle\Socket\Stream;
@@ -16,15 +15,16 @@ class EventLoopTest extends AbstractLoopTest
     
     public static function setUpBeforeClass()
     {
-        $config = new EventConfig();
-        $config->requireFeatures(EventConfig::FEATURE_O1);
-        
-        self::$base = new EventBase($config);
+        if (extension_loaded('event')) {
+            self::$base = new EventBase();
+        }
     }
     
     public static function tearDownAfterClass()
     {
-        self::$base->free();
+        if (null !== self::$base) {
+            self::$base->free();
+        }
     }
     
     public function createLoop(EventFactoryInterface $eventFactory)

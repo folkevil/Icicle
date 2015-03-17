@@ -3,7 +3,6 @@ namespace Icicle\Loop;
 
 use Event;
 use EventBase;
-use EventConfig;
 use Icicle\Loop\Events\AwaitInterface;
 use Icicle\Loop\Events\EventFactoryInterface;
 use Icicle\Loop\Events\PollInterface;
@@ -90,12 +89,10 @@ class EventLoop extends AbstractLoop
         
         $this->base = $base;
         
+        // @codeCoverageIgnoreStart
         if (null === $this->base) {
-            $config = new EventConfig();
-            $config->requireFeatures(EventConfig::FEATURE_O1);
-            
-            $this->base = new EventBase($config);
-        }
+            $this->base = new EventBase();
+        } // @codeCoverageIgnoreEnd
         
         $this->timers = new UnreferencableObjectStorage();
         

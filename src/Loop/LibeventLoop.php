@@ -100,9 +100,10 @@ class LibeventLoop extends AbstractLoop
         
         $this->base = $base;
         
+        // @codeCoverageIgnoreStart
         if (!is_resource($base)) {
             $this->base = event_base_new();
-        }
+        } // @codeCoverageIgnoreEnd
         
         $this->timers = new UnreferencableObjectStorage();
         
